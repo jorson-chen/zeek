@@ -78,12 +78,12 @@ struct scoped_reporter_location {
 };
 
 #ifdef DEBUG
-static std::string RenderMessage(std::string topic, const broker::data& x)
+static std::string RenderMessage(const std::string& topic, const broker::data& x)
 	{
 	return fmt("%s -> %s", broker::to_string(x).c_str(), topic.c_str());
 	}
 
-static std::string RenderEvent(std::string topic, std::string name, const broker::data& args)
+static std::string RenderEvent(const std::string& topic, const std::string& name, const broker::data& args)
 	{
 	return fmt("%s(%s) -> %s", name.c_str(), broker::to_string(args).c_str(), topic.c_str());
 	}
@@ -354,7 +354,7 @@ std::string Manager::NodeID() const
 	return to_string(bstate->endpoint.node_id());
 	}
 
-bool Manager::PublishEvent(string topic, std::string name, broker::vector args)
+bool Manager::PublishEvent(const string& topic, const std::string& name, broker::vector args)
 	{
 	if ( bstate->endpoint.is_shutdown() )
 		return true;
@@ -370,7 +370,7 @@ bool Manager::PublishEvent(string topic, std::string name, broker::vector args)
 	return true;
 	}
 
-bool Manager::PublishEvent(string topic, RecordVal* args)
+bool Manager::PublishEvent(const string& topic, RecordVal* args)
 	{
 	if ( bstate->endpoint.is_shutdown() )
 		return true;
@@ -396,7 +396,7 @@ bool Manager::PublishEvent(string topic, RecordVal* args)
 	return PublishEvent(topic, event_name, std::move(xs));
 	}
 
-bool Manager::PublishIdentifier(std::string topic, std::string id)
+bool Manager::PublishIdentifier(const std::string& topic, const std::string& id)
 	{
 	if ( bstate->endpoint.is_shutdown() )
 		return true;
@@ -490,7 +490,7 @@ bool Manager::PublishLogCreate(EnumVal* stream, EnumVal* writer,
 	return true;
 	}
 
-bool Manager::PublishLogWrite(EnumVal* stream, EnumVal* writer, string path, int num_fields, const threading::Value* const * vals)
+bool Manager::PublishLogWrite(EnumVal* stream, EnumVal* writer, const string& path, int num_fields, const threading::Value* const * vals)
 	{
 	if ( bstate->endpoint.is_shutdown() )
 		return true;
@@ -634,7 +634,7 @@ void Manager::Error(const char* format, ...)
 		reporter->Error("%s", msg);
 	}
 
-bool Manager::AutoPublishEvent(string topic, Val* event)
+bool Manager::AutoPublishEvent(const string& topic, Val* event)
 	{
 	if ( event->Type()->Tag() != TYPE_FUNC )
 		{
@@ -791,7 +791,7 @@ bool Manager::Subscribe(const string& topic_prefix)
 	return true;
 	}
 
-bool Manager::Forward(string topic_prefix)
+bool Manager::Forward(const string& topic_prefix)
 	{
 	for ( auto i = 0u; i < forwarded_prefixes.size(); ++i )
 		if ( forwarded_prefixes[i] == topic_prefix )
@@ -1214,7 +1214,7 @@ bool Manager::ProcessIdentifierUpdate(broker::zeek::IdentifierUpdate iu)
 	return true;
 	}
 
-void Manager::ProcessStatus(broker::status stat)
+void Manager::ProcessStatus(const broker::status& stat)
 	{
 	DBG_LOG(DBG_BROKER, "Received status message: %s", RenderMessage(stat).c_str());
 
