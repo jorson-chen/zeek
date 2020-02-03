@@ -47,7 +47,7 @@ void Manager::SearchDynamicPlugins(const std::string& dir)
 	if ( dir.empty() )
 		return;
 
-	if ( dir.find(":") != string::npos )
+	if ( dir.find(':') != string::npos )
 		{
 		// Split at ":".
 		std::stringstream s(dir);
@@ -491,7 +491,7 @@ Plugin* Manager::LookupPluginByPath(std::string path)
 		if ( i != plugins_by_path.end() )
 			return i->second;
 
-		auto j = path.rfind("/");
+		auto j = path.rfind('/');
 
 		if ( j == std::string::npos )
 			break;
