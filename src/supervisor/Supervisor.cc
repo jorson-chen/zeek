@@ -530,6 +530,17 @@ void Stem::KillNode(Supervisor::Node* node, int signal) const
 		         node->Name().data(), node->pid, strerror(errno));
 	}
 
+static int get_kill_signal(int attempts, int max_attempts)
+	{
+	if ( getenv("ZEEK_SUPERVISOR_NO_SIGKILL") )
+		return SIGTERM;
+
+	if ( attempts < max_attempts )
+		return SIGTERM;
+
+	return SIGKILL;
+	}
+
 void Stem::Destroy(Supervisor::Node* node) const
 	{
 	constexpr auto max_term_attempts = 13;
@@ -545,7 +556,7 @@ void Stem::Destroy(Supervisor::Node* node) const
 
 	for ( ; ; )
 		{
-		auto sig = kill_attempts++ < max_term_attempts ? SIGTERM : SIGKILL;
+		auto sig = get_kill_signal(kill_attempts++, max_term_attempts);
 		KillNode(node, sig);
 		usleep(10);
 
@@ -661,7 +672,7 @@ void Stem::Shutdown(int exit_code)
 
 	for ( ; ; )
 		{
-		auto sig = kill_attempts++ < max_term_attempts ? SIGTERM : SIGKILL;
+		auto sig = get_kill_signal(kill_attempts++, max_term_attempts);
 
 		if ( ! nodes.empty() )
 			{
