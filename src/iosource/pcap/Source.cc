@@ -7,6 +7,8 @@
 #include "Source.h"
 #include "iosource/Packet.h"
 
+#include "Event.h"
+
 #include "pcap.bif.h"
 
 #ifdef HAVE_PCAP_INT_H
@@ -48,6 +50,9 @@ void PcapSource::Close()
 	last_data = nullptr;
 
 	Closed();
+
+	if ( Pcap::file_done )
+		mgr.QueueEventFast(Pcap::file_done, {new StringVal(props.path)});
 	}
 
 void PcapSource::OpenLive()
